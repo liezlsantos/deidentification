@@ -62,7 +62,7 @@ public class Deidentifier {
     public boolean lessThanKOccurence(int k, int field, String value) {
         int counter = 0;
         for (int i = 0; i < records.size(); i++) {
-            if(records.get(i)[field].equals(value)) {
+            if (records.get(i)[field].equals(value)) {
                 counter++;
                 records.get(i)[field] = "@" + value;
             }
@@ -163,7 +163,7 @@ public class Deidentifier {
 
     public void replaceRandomly(int field) {
         int random;
-        for(int i = 0; i < records.size(); i++) {
+        for (int i = 0; i < records.size(); i++) {
             random = (int)(Math.random() * (records.size()));
             records.get(i)[field] = records.get(random)[field];
         }

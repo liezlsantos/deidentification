@@ -29,41 +29,52 @@ import SplashScreen.SplashScreen;
 
 
 @SuppressWarnings("serial")
-public class DeidentificationTool extends JFrame implements ActionListener{
+public class DeidentificationTool extends JFrame implements ActionListener {
 
     private Deidentifier deidentifier;
+
     private JFileChooser fileChooser = new JFileChooser();
+
     private JMenu fileMenu = new JMenu("File"), helpMenu = new JMenu("Help");
     private JMenuBar menuBar = new JMenuBar();
     private JMenuItem openFile = new JMenuItem("Open File"),
-                      instruction = new JMenuItem("Instructions"),
-                      about = new JMenuItem("About De-identification Tool"),
-                      exit = new JMenuItem("Exit");
-    private JPanel mainPanel = new JPanel(), pseudoPanel = new JPanel(new GridLayout(0,1)), randomPanel = new JPanel(new GridLayout(0,1)), swapPanel = new JPanel(new GridLayout(0,1)),
-            kPanel = new JPanel(new GridLayout(0,1)), kValuePanel = new JPanel(), methodsPanel, panel = new JPanel();
+        instruction = new JMenuItem("Instructions"),
+        about = new JMenuItem("About De-identification Tool"),
+        exit = new JMenuItem("Exit");
+
+    private JPanel mainPanel = new JPanel(),
+        pseudoPanel = new JPanel(new GridLayout(0,1)),
+        randomPanel = new JPanel(new GridLayout(0,1)),
+        swapPanel = new JPanel(new GridLayout(0,1)),
+        kPanel = new JPanel(new GridLayout(0,1)),
+        kValuePanel = new JPanel(),
+        methodsPanel, panel = new JPanel();
+
     private JLabel info = new JLabel(),
-                   csvFileLabel = new JLabel("Input File:"),
-                   subsamplingLabel = new JLabel("Number of records to disclose:"),
-                   kLabel = new JLabel("k value:");
+        csvFileLabel = new JLabel("Input File:"),
+        subsamplingLabel = new JLabel("Number of records to disclose:"),
+        kLabel = new JLabel("k value:");
+
     private JTextField inputFile = new JTextField(),
-                       noOfRecordsField = new JTextField(),
-                       kField = new JTextField("", 9);
+        noOfRecordsField = new JTextField(),
+        kField = new JTextField("", 9);
+
     private JButton deidentifyButton = new JButton("De-identify");
     private String instructionMessage = "<html>" +
-                                        "<br> 1. Open the CSV file containing all the records to be de-identified. <br> " +
-                                        "<br> 2. Enter the number of records to be disclosed. It must not exceed the total number of records. <br> " +
-                                        "<br> 3. Check the fields to be de-indentified under each de-identification method. <br>" +
-                                        "<br> 4. Click the 'De-identify' button. <br> "+
-                                        "<br> 5. Enter the filename of the csv file that will contain the de-identified data set and click save. <br> "+
-                                        "</html>";
+        "<br> 1. Open the CSV file containing all the records to be de-identified. <br> " +
+        "<br> 2. Enter the number of records to be disclosed. It must not exceed the total number of records. <br> " +
+        "<br> 3. Check the fields to be de-indentified under each de-identification method. <br>" +
+        "<br> 4. Click the 'De-identify' button. <br> "+
+        "<br> 5. Enter the filename of the csv file that will contain the de-identified data set and click save. <br> "+
+        "</html>";
+
     private JCheckBox[] pseudoChecks, randomChecks, swapChecks, kChecks;
     private JScrollPane pseudoPane, randomPane, swapPane, kPane;
 
     private static final Font PLAIN_FONT = new Font("Arial", Font.PLAIN, 12);
     private SplashScreen splash;
 
-    public DeidentificationTool(boolean firstLaunch, String inputFilename)
-    {
+    public DeidentificationTool(boolean firstLaunch, String inputFilename) {
         super("De-identification Tool");
         setSize(830, 620);
         setResizable(false);
@@ -102,7 +113,7 @@ public class DeidentificationTool extends JFrame implements ActionListener{
         } else {
             try {
                 loadCSV(inputFilename);
-            } catch(Exception e){
+            } catch (Exception e) {
                 info.setText("Out of memory.");
             }
         }
@@ -113,7 +124,7 @@ public class DeidentificationTool extends JFrame implements ActionListener{
 
         if (firstLaunch) {
             splash = new SplashScreen();
-            while(splash.visible);
+            while (splash.visible);
         }
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -229,27 +240,41 @@ public class DeidentificationTool extends JFrame implements ActionListener{
         if (e.getSource().equals(openFile)) {
             int val = fileChooser.showOpenDialog(this);
             if (val == JFileChooser.APPROVE_OPTION) {
-                new DeidentificationTool(false, fileChooser.getCurrentDirectory().toString()+ "\\" + fileChooser.getSelectedFile().getName());
+                new DeidentificationTool(false,
+                    fileChooser.getCurrentDirectory().toString() +
+                    "\\" + fileChooser.getSelectedFile().getName()
+                );
                 setVisible(false);
             }
         } else if (e.getSource().equals(exit)) {
             System.exit(0);
         } else if (e.getSource().equals(instruction)) {
             UIManager.put("OptionPane.messageFont", PLAIN_FONT);
-            JOptionPane.showMessageDialog(this, instructionMessage, "Instruction", JOptionPane.PLAIN_MESSAGE);
-        } else if(e.getSource().equals(about)) {
+            JOptionPane.showMessageDialog(this,
+                instructionMessage,
+                "Instruction",
+                JOptionPane.PLAIN_MESSAGE
+            );
+        } else if (e.getSource().equals(about)) {
             UIManager.put("OptionPane.messageFont", PLAIN_FONT);
-            JOptionPane.showMessageDialog(this, "<html>De-identification Tool <br><br> Version: 1.0            <br> Developed by: Liezl Santos <br><br> This application is used to de-identify records in CSV format.</html>", "About De-identification Tool", JOptionPane.PLAIN_MESSAGE);
-        } else if(e.getSource().equals(deidentifyButton)) {
+            JOptionPane.showMessageDialog(this,
+                "<html> De-identification Tool <br><br> Version: 1.0 " +
+                    "<br> Developed by: Liezl Santos <br><br> " +
+                    "This application is used to de-identify records in CSV format.</html>",
+                "About De-identification Tool",
+                JOptionPane.PLAIN_MESSAGE);
+        } else if (e.getSource().equals(deidentifyButton)) {
             if (!noOfRecordsField.getText().equals("")) {
                 try {
                     int noOfRecords = Integer.parseInt(noOfRecordsField.getText());
                     if (noOfRecords > deidentifier.getNoOfRecords() || noOfRecords < 1) {
-                        info.setText("No. of records to be disclosed must be a number from (1-"+ deidentifier.getNoOfRecords() +")");
+                        info.setText("No. of records to be disclosed must be a number from (1-" +
+                            deidentifier.getNoOfRecords() +")"
+                        );
                         Toolkit.getDefaultToolkit().beep();
                         return;
                     }
-                } catch (Exception a){
+                } catch (Exception e) {
                     info.setText("No. of records to be disclosed is not a valid number.");
                     Toolkit.getDefaultToolkit().beep();
                     return;
@@ -259,26 +284,26 @@ public class DeidentificationTool extends JFrame implements ActionListener{
                 try {
                     int k = Integer.parseInt(kField.getText());
                     if (k > deidentifier.getNoOfRecords()) {
-                        info.setText("<html><i>k</i> must not exceed the total no. of records.</html>");
+                        info.setText("<html> <i>k</i> must not exceed the total no. of records. </html>");
                         Toolkit.getDefaultToolkit().beep();
                         return;
                     }
-                } catch (Exception a){
-                    info.setText("<html>Invalid <i>k</i> value. </html>");
+                } catch (Exception e) {
+                    info.setText("<html> Invalid <i>k</i> value. </html>");
                     Toolkit.getDefaultToolkit().beep();
                     return;
                 }
             }
             if (kField.getText().equals("") && hasChecked(kChecks)) {
-                info.setText("<html>Input <i>k</i> value. </html>");
+                info.setText("<html> Input <i>k</i> value. </html>");
                 Toolkit.getDefaultToolkit().beep();
                 return;
             } else {
                 if (!noOfRecordsField.getText().equals("")) {
                     deidentifier.subsample(Integer.parseInt(noOfRecordsField.getText()));
                 }
-                int noOfKChecks = 0;
 
+                int noOfKChecks = 0;
                 for (int i = 0; i < randomChecks.length; i++) {
                     if (randomChecks[i].isSelected()) {
                         deidentifier.replaceRandomly(i);
@@ -294,6 +319,7 @@ public class DeidentificationTool extends JFrame implements ActionListener{
                         noOfKChecks++;
                     }
                 }
+
                 int[] fields = new int[noOfKChecks];
                 int j = 0;
                 for (int i = 0; i < randomChecks.length; i++) {
@@ -302,6 +328,7 @@ public class DeidentificationTool extends JFrame implements ActionListener{
                         j++;
                     }
                 }
+
                 if (!kField.getText().equals("")) {
                     deidentifier.kAnonymizeMultipleFields(Integer.parseInt(kField.getText()), fields);
                 }
@@ -309,12 +336,21 @@ public class DeidentificationTool extends JFrame implements ActionListener{
                 fileChooser.setSelectedFile(new File("de-identified data set.csv"));
                 int rVal = fileChooser.showSaveDialog(this);
                 if (rVal == JFileChooser.APPROVE_OPTION) {
-                    File f = new File(fileChooser.getCurrentDirectory().toString()+ "\\" + fileChooser.getSelectedFile().getName());
+                    File f = new File(fileChooser.getCurrentDirectory().toString() +
+                        "\\" + fileChooser.getSelectedFile().getName()
+                    );
+
                     if (!f.exists() && !f.isDirectory()) {
-                        deidentifier.writeCSV(fileChooser.getCurrentDirectory().toString()+ "\\" + fileChooser.getSelectedFile().getName());
+                        deidentifier.writeCSV(fileChooser.getCurrentDirectory().toString() +
+                            "\\" + fileChooser.getSelectedFile().getName()
+                        );
                         info.setText("File saved.");
                     } else {
-                        int value = JOptionPane.showConfirmDialog(fileChooser, fileChooser.getSelectedFile().getName()+" already exists. \r\n Do you want to replace it?", "Confirm Save As", JOptionPane.YES_NO_OPTION);
+                        int value = JOptionPane.showConfirmDialog(fileChooser,
+                            fileChooser.getSelectedFile().getName() +
+                                " already exists. \r\n Do you want to replace it?", "Confirm Save As",
+                            JOptionPane.YES_NO_OPTION);
+
                         if (value == JOptionPane.YES_OPTION) {
                             deidentifier.writeCSV(fileChooser.getCurrentDirectory().toString()+ "\\" + fileChooser.getSelectedFile().getName());
                             info.setText("File saved.");
@@ -337,8 +373,11 @@ public class DeidentificationTool extends JFrame implements ActionListener{
 
     public static void main(String[] args) {
         try {
-            javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
-        } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e1) {
+            javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
+        } catch (UnsupportedLookAndFeelException |
+            ClassNotFoundException |
+            InstantiationException |
+            IllegalAccessException e) {
         	e.printStackTrace();
         }
         new DeidentificationTool(true, "");
